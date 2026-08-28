@@ -18,3 +18,7 @@ export function proxy(request: NextRequest) {
     headers: { 'WWW-Authenticate': 'Basic realm="priscilla-trello"' },
   })
 }
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image).*)'],
+}
