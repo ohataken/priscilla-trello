@@ -3,10 +3,18 @@ import { CombinationsPresentation } from './combinations-presentation'
 
 export const dynamic = 'force-dynamic'
 
+const MAX_COMBINATIONS = 200
+
 export default async function Page() {
   const listIds = await readLists()
   if (listIds.length === 0) {
-    return <CombinationsPresentation lists={[]} />
+    return (
+      <CombinationsPresentation
+        lists={[]}
+        combinationCount={0}
+        maxCombinations={MAX_COMBINATIONS}
+      />
+    )
   }
 
   const key = process.env.TRELLO_API_KEY
@@ -25,17 +33,33 @@ export default async function Page() {
 
   const fetched = await Promise.all(
     listIds.map(async (listId) => {
-      const response = await fetch(
-        `https://api.trello.com/1/lists/${encodeURIComponent(listId)}?fields=id,name`,
-        init,
-      )
-      if (!response.ok) {
+      const base = `https://api.trello.com/1/lists/${encodeURIComponent(listId)}`
+      const [listResponse, cardsResponse] = await Promise.all([
+        fetch(`${base}?fields=id,name`, init),
+        fetch(`${base}/cards?fields=id&filter=open`, init),
+      ])
+      if (!listResponse.ok || !cardsResponse.ok) {
         return null
       }
-      return (await response.json()) as { id: string; name: string }
+
+      const list = (await listResponse.json()) as { id: string; name: string }
+      const cards = (await cardsResponse.json()) as { id: string }[]
+      return { id: list.id, name: list.name, cardCount: cards.length }
     }),
   )
   const lists = fetched.filter((list) => list !== null)
 
-  return <CombinationsPresentation lists={lists} />
+  const usable = lists.filter((list) => list.cardCount > 0)
+  const combinationCount =
+    usable.length === 0
+      ? 0
+      : usable.reduce((total, list) => total * list.cardCount, 1)
+
+  return (
+    <CombinationsPresentation
+      lists={lists}
+      combinationCount={combinationCount}
+      maxCombinations={MAX_COMBINATIONS}
+    />
+  )
 }
