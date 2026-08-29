@@ -36,24 +36,28 @@ export default async function Page() {
       const base = `https://api.trello.com/1/lists/${encodeURIComponent(listId)}`
       const [listResponse, cardsResponse] = await Promise.all([
         fetch(`${base}?fields=id,name`, init),
-        fetch(`${base}/cards?fields=id&filter=open`, init),
+        fetch(`${base}/cards?fields=id,name,desc&filter=open`, init),
       ])
       if (!listResponse.ok || !cardsResponse.ok) {
         return null
       }
 
       const list = (await listResponse.json()) as { id: string; name: string }
-      const cards = (await cardsResponse.json()) as { id: string }[]
-      return { id: list.id, name: list.name, cardCount: cards.length }
+      const cards = (await cardsResponse.json()) as {
+        id: string
+        name: string
+        desc: string
+      }[]
+      return { id: list.id, name: list.name, cards }
     }),
   )
   const lists = fetched.filter((list) => list !== null)
 
-  const usable = lists.filter((list) => list.cardCount > 0)
+  const usable = lists.filter((list) => list.cards.length > 0)
   const combinationCount =
     usable.length === 0
       ? 0
-      : usable.reduce((total, list) => total * list.cardCount, 1)
+      : usable.reduce((total, list) => total * list.cards.length, 1)
 
   return (
     <CombinationsPresentation

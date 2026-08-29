@@ -1,19 +1,54 @@
+'use client'
+
 import Link from 'next/link'
+import { useState } from 'react'
 
 import { clearLists, removeList } from './actions'
+
+type Card = { id: string; name: string; desc: string }
+type List = { id: string; name: string; cards: Card[] }
+
+const PLACEHOLDER = /\{\{\s*(\w+)\s*\}\}/g
+
+function renderTemplate(template: string, values: Record<string, string>): string {
+  return template.replace(PLACEHOLDER, (matched, key: string) => values[key] ?? matched)
+}
+
+function cartesianProduct(groups: Card[][]): Card[][] {
+  return groups.reduce<Card[][]>(
+    (acc, group) => acc.flatMap((combo) => group.map((card) => [...combo, card])),
+    [[]],
+  )
+}
+
+function valuesOf(combination: Card[]): Record<string, string> {
+  const values: Record<string, string> = {}
+  combination.forEach((card, index) => {
+    values[`name${index + 1}`] = card.name
+    values[`desc${index + 1}`] = card.desc
+  })
+  return values
+}
 
 export function CombinationsPresentation({
   lists,
   combinationCount,
   maxCombinations,
 }: {
-  lists: { id: string; name: string; cardCount: number }[]
+  lists: List[]
   combinationCount: number
   maxCombinations: number
 }) {
-  const usable = lists.filter((list) => list.cardCount > 0)
-  const empty = lists.filter((list) => list.cardCount === 0)
+  const [template, setTemplate] = useState('{{desc1}}')
+
+  const usable = lists.filter((list) => list.cards.length > 0)
+  const empty = lists.filter((list) => list.cards.length === 0)
   const overLimit = combinationCount > maxCombinations
+  const combinations =
+    overLimit || usable.length === 0 ? [] : cartesianProduct(usable.map((list) => list.cards))
+  const variables = usable
+    .map((_, index) => `{{name${index + 1}}} {{desc${index + 1}}}`)
+    .join(' ')
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-5 py-8">
@@ -35,7 +70,7 @@ export function CombinationsPresentation({
             <p className="mt-1 text-sm text-neutral-500">通りの組み合わせ</p>
             {usable.length > 0 && (
               <p className="mt-3 text-sm text-neutral-500 tabular-nums">
-                {usable.map((list) => list.cardCount).join(' × ')}
+                {usable.map((list) => list.cards.length).join(' × ')}
               </p>
             )}
           </section>
@@ -52,7 +87,7 @@ export function CombinationsPresentation({
                 </span>
                 <span className="flex shrink-0 items-center gap-3">
                   <span className="text-sm text-neutral-500 tabular-nums">
-                    {list.cardCount} 枚
+                    {list.cards.length} 枚
                   </span>
                   <form action={removeList}>
                     <input type="hidden" name="listId" value={list.id} />
@@ -80,8 +115,54 @@ export function CombinationsPresentation({
               role="alert"
               className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-900 dark:bg-red-950 dark:text-red-100"
             >
-              上限 {maxCombinations} 通りを超えています。リストを減らしてください。
+              上限 {maxCombinations} 通りを超えているため展開していません。リストを減らしてください。
             </p>
+          )}
+
+          {combinations.length > 0 && (
+            <>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="template" className="text-sm font-semibold text-neutral-500">
+                  テンプレート
+                </label>
+                <textarea
+                  id="template"
+                  value={template}
+                  onChange={(event) => setTemplate(event.target.value)}
+                  rows={6}
+                  className="rounded-xl border border-neutral-300 bg-transparent px-4 py-3 font-mono text-sm dark:border-neutral-700"
+                />
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs break-all text-neutral-500">使える変数: {variables}</p>
+                  <button
+                    type="button"
+                    onClick={() => setTemplate('')}
+                    disabled={template.length === 0}
+                    className="shrink-0 rounded-lg border border-neutral-300 px-3 py-1 text-xs text-neutral-500 disabled:opacity-40 dark:border-neutral-700"
+                  >
+                    クリア
+                  </button>
+                </div>
+              </div>
+
+              <ul className="flex flex-col gap-3">
+                {combinations.map((combination) => {
+                  const rendered = renderTemplate(template, valuesOf(combination))
+
+                  return (
+                    <li
+                      key={combination.map((card) => card.id).join('-')}
+                      className="flex flex-col gap-2 rounded-lg bg-neutral-100 px-4 py-3 dark:bg-neutral-900"
+                    >
+                      <p className="text-sm font-semibold break-words">
+                        {combination.map((card) => card.name).join(' × ')}
+                      </p>
+                      <p className="text-xs whitespace-pre-wrap text-neutral-500">{rendered}</p>
+                    </li>
+                  )
+                })}
+              </ul>
+            </>
           )}
 
           <form action={clearLists}>
