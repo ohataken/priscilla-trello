@@ -9,6 +9,28 @@ function renderTemplate(template: string, values: Record<string, string>): strin
   return template.replace(PLACEHOLDER, (matched, key: string) => values[key] ?? matched)
 }
 
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false)
+
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(text)
+          setCopied(true)
+          setTimeout(() => setCopied(false), 2000)
+        } catch {
+          setCopied(false)
+        }
+      }}
+      className="self-start rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 active:bg-blue-700"
+    >
+      {copied ? 'コピーしました' : 'コピー'}
+    </button>
+  )
+}
+
 export function ListPresentation({
   boardId,
   list,
@@ -66,6 +88,7 @@ export function ListPresentation({
               >
                 <p className="text-sm font-semibold break-words">{card.name}</p>
                 <p className="text-xs whitespace-pre-wrap text-neutral-500">{rendered}</p>
+                <CopyButton text={rendered} />
               </li>
             )
           })}
