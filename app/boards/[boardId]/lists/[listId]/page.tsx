@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation'
 
+import { readLists } from '@/app/combinations/combinations-cookie'
+
 import { ListPresentation } from './list-presentation'
 
 export default async function Page({
@@ -42,5 +44,15 @@ export default async function Page({
     desc: string
   }[]
 
-  return <ListPresentation boardId={boardId} listId={listId} list={list} cards={cards} />
+  const selected = await readLists()
+
+  return (
+    <ListPresentation
+      boardId={boardId}
+      listId={listId}
+      list={list}
+      cards={cards}
+      selected={selected.includes(listId)}
+    />
+  )
 }

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 
-import { addList } from '@/app/combinations/actions'
+import { addList, removeList } from '@/app/combinations/actions'
 
 const PLACEHOLDER = /\{\{\s*(\w+)\s*\}\}/g
 
@@ -38,11 +38,13 @@ export function ListPresentation({
   listId,
   list,
   cards,
+  selected,
 }: {
   boardId: string
   listId: string
   list: { name: string }
   cards: { id: string; name: string; desc: string }[]
+  selected: boolean
 }) {
   const [template, setTemplate] = useState('{{desc}}')
 
@@ -59,15 +61,32 @@ export function ListPresentation({
       </div>
 
       <div className="flex items-center gap-4">
-        <form action={addList}>
-          <input type="hidden" name="listId" value={listId} />
-          <button
-            type="submit"
-            className="rounded-lg border border-neutral-300 px-4 py-2 text-xs text-neutral-500 dark:border-neutral-700"
-          >
-            組み合わせに追加
-          </button>
-        </form>
+        {selected ? (
+          <div className="flex items-center gap-3">
+            <span className="rounded-lg bg-neutral-200 px-3 py-1 text-xs text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+              組み合わせに追加済み
+            </span>
+            <form action={removeList}>
+              <input type="hidden" name="listId" value={listId} />
+              <button
+                type="submit"
+                className="text-xs text-neutral-500 underline underline-offset-4"
+              >
+                外す
+              </button>
+            </form>
+          </div>
+        ) : (
+          <form action={addList}>
+            <input type="hidden" name="listId" value={listId} />
+            <button
+              type="submit"
+              className="rounded-lg border border-neutral-300 px-4 py-2 text-xs text-neutral-500 dark:border-neutral-700"
+            >
+              組み合わせに追加
+            </button>
+          </form>
+        )}
         <Link href="/combinations" className="text-sm text-neutral-500 underline underline-offset-4">
           組み合わせを見る
         </Link>
