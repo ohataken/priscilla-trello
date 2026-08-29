@@ -36,19 +36,26 @@ export default async function Page() {
       const base = `https://api.trello.com/1/lists/${encodeURIComponent(listId)}`
       const [listResponse, cardsResponse] = await Promise.all([
         fetch(`${base}?fields=id,name`, init),
-        fetch(`${base}/cards?fields=id,name,desc&filter=open`, init),
+        fetch(`${base}/cards?fields=id,name,desc,dueComplete&filter=open`, init),
       ])
       if (!listResponse.ok || !cardsResponse.ok) {
         return null
       }
 
       const list = (await listResponse.json()) as { id: string; name: string }
-      const cards = (await cardsResponse.json()) as {
+      const all = (await cardsResponse.json()) as {
         id: string
         name: string
         desc: string
+        dueComplete: boolean
       }[]
-      return { id: list.id, name: list.name, cards }
+      const cards = all.filter((card) => !card.dueComplete)
+      return {
+        id: list.id,
+        name: list.name,
+        cards,
+        excludedCount: all.length - cards.length,
+      }
     }),
   )
   const lists = fetched.filter((list) => list !== null)

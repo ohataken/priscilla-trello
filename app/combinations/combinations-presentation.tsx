@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { clearLists, removeList } from './actions'
 
 type Card = { id: string; name: string; desc: string }
-type List = { id: string; name: string; cards: Card[] }
+type List = { id: string; name: string; cards: Card[]; excludedCount: number }
 
 const PLACEHOLDER = /\{\{\s*(\w+)\s*\}\}/g
 
@@ -110,6 +110,12 @@ export function CombinationsPresentation({
                 <span className="flex shrink-0 items-center gap-3">
                   <span className="text-sm text-neutral-500 tabular-nums">
                     {list.cards.length} 枚
+                    {list.excludedCount > 0 && (
+                      <span className="text-xs text-neutral-400">
+                        {' '}
+                        / 完了 {list.excludedCount}
+                      </span>
+                    )}
                   </span>
                   <form action={removeList}>
                     <input type="hidden" name="listId" value={list.id} />
