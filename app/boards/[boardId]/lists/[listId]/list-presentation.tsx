@@ -65,9 +65,19 @@ export function ListPresentation({
           rows={6}
           className="rounded-xl border border-neutral-300 bg-transparent px-4 py-3 font-mono text-sm dark:border-neutral-700"
         />
-        <p className="text-xs text-neutral-500">
-          使える変数: {'{{name}}'} {'{{desc}}'} {'{{list}}'}
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs text-neutral-500">
+            使える変数: {'{{name}}'} {'{{desc}}'} {'{{list}}'}
+          </p>
+          <button
+            type="button"
+            onClick={() => setTemplate('')}
+            disabled={template.length === 0}
+            className="shrink-0 rounded-lg border border-neutral-300 px-3 py-1 text-xs text-neutral-500 disabled:opacity-40 dark:border-neutral-700"
+          >
+            クリア
+          </button>
+        </div>
       </div>
 
       {cards.length === 0 ? (
