@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { useState } from 'react'
 
+import { addList } from '@/app/combinations/actions'
+
 const PLACEHOLDER = /\{\{\s*(\w+)\s*\}\}/g
 
 function renderTemplate(template: string, values: Record<string, string>): string {
@@ -33,10 +35,12 @@ function CopyButton({ text }: { text: string }) {
 
 export function ListPresentation({
   boardId,
+  listId,
   list,
   cards,
 }: {
   boardId: string
+  listId: string
   list: { name: string }
   cards: { id: string; name: string; desc: string }[]
 }) {
@@ -52,6 +56,21 @@ export function ListPresentation({
           ボードに戻る
         </Link>
         <h1 className="text-xl font-bold break-words">{list.name}</h1>
+      </div>
+
+      <div className="flex items-center gap-4">
+        <form action={addList}>
+          <input type="hidden" name="listId" value={listId} />
+          <button
+            type="submit"
+            className="rounded-lg border border-neutral-300 px-4 py-2 text-xs text-neutral-500 dark:border-neutral-700"
+          >
+            組み合わせに追加
+          </button>
+        </form>
+        <Link href="/combinations" className="text-sm text-neutral-500 underline underline-offset-4">
+          組み合わせを見る
+        </Link>
       </div>
 
       <div className="flex flex-col gap-2">

@@ -42,5 +42,5 @@ export default async function Page({
     desc: string
   }[]
 
-  return <ListPresentation boardId={boardId} list={list} cards={cards} />
+  return <ListPresentation boardId={boardId} listId={listId} list={list} cards={cards} />
 }
