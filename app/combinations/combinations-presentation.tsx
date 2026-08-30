@@ -153,9 +153,17 @@ export function CombinationsPresentation({
           {combinations.length > 0 && (
             <>
               <div className="flex flex-col gap-2">
-                <label htmlFor="template" className="text-sm font-semibold text-neutral-500">
-                  テンプレート
-                </label>
+                <div className="flex items-center justify-between gap-3">
+                  <label htmlFor="template" className="text-sm font-semibold text-neutral-500">
+                    テンプレート
+                  </label>
+                  <Link
+                    href="/combinations/boards"
+                    className="shrink-0 text-xs text-neutral-500 underline underline-offset-4"
+                  >
+                    カードから選ぶ
+                  </Link>
+                </div>
                 <textarea
                   id="template"
                   value={template}
