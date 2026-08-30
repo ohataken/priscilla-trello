@@ -30,7 +30,7 @@ function valuesOf(combination: Card[]): Record<string, string> {
   return values
 }
 
-function CopyButton({ text }: { text: string }) {
+function CopyButton({ text, className }: { text: string; className: string }) {
   const [copied, setCopied] = useState(false)
 
   return (
@@ -45,7 +45,8 @@ function CopyButton({ text }: { text: string }) {
           setCopied(false)
         }
       }}
-      className="self-start rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 active:bg-blue-700"
+      disabled={text.length === 0}
+      className={className}
     >
       {copied ? 'コピーしました' : 'コピー'}
     </button>
@@ -162,14 +163,20 @@ export function CombinationsPresentation({
                 />
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs break-all text-neutral-500">使える変数: {variables}</p>
-                  <button
-                    type="button"
-                    onClick={() => setTemplate('')}
-                    disabled={template.length === 0}
-                    className="shrink-0 rounded-lg border border-neutral-300 px-3 py-1 text-xs text-neutral-500 disabled:opacity-40 dark:border-neutral-700"
-                  >
-                    クリア
-                  </button>
+                  <span className="flex shrink-0 items-center gap-2">
+                    <CopyButton
+                      text={template}
+                      className="rounded-lg border border-neutral-300 px-3 py-1 text-xs text-neutral-500 disabled:opacity-40 dark:border-neutral-700"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setTemplate('')}
+                      disabled={template.length === 0}
+                      className="rounded-lg border border-neutral-300 px-3 py-1 text-xs text-neutral-500 disabled:opacity-40 dark:border-neutral-700"
+                    >
+                      クリア
+                    </button>
+                  </span>
                 </div>
               </div>
 
@@ -186,7 +193,10 @@ export function CombinationsPresentation({
                         {combination.map((card) => card.name).join(' × ')}
                       </p>
                       <p className="text-xs whitespace-pre-wrap text-neutral-500">{rendered}</p>
-                      <CopyButton text={rendered} />
+                      <CopyButton
+                        text={rendered}
+                        className="self-start rounded-lg bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-blue-500 active:bg-blue-700 disabled:bg-neutral-400 dark:disabled:bg-neutral-700"
+                      />
                     </li>
                   )
                 })}
