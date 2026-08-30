@@ -5,14 +5,28 @@ export const dynamic = 'force-dynamic'
 
 const MAX_COMBINATIONS = 200
 
-export default async function Page() {
-  const listIds = await readLists()
+async function fetchCardDesc(cardId: string, init: RequestInit): Promise<string> {
+  const response = await fetch(
+    `https://api.trello.com/1/cards/${encodeURIComponent(cardId)}?fields=desc`,
+    init,
+  )
+  if (!response.ok) {
+    return ''
+  }
+
+  const card = (await response.json()) as { desc: string }
+  return card.desc
+}
+
+export default async function Page({ searchParams }: PageProps<'/combinations'>) {
+  const [{ cardId }, listIds] = await Promise.all([searchParams, readLists()])
   if (listIds.length === 0) {
     return (
       <CombinationsPresentation
         lists={[]}
         combinationCount={0}
         maxCombinations={MAX_COMBINATIONS}
+        initialTemplate=""
       />
     )
   }
@@ -60,6 +74,9 @@ export default async function Page() {
   )
   const lists = fetched.filter((list) => list !== null)
 
+  const template =
+    typeof cardId === 'string' ? await fetchCardDesc(cardId, init) : ''
+
   const usable = lists.filter((list) => list.cards.length > 0)
   const combinationCount =
     usable.length === 0
@@ -71,6 +88,7 @@ export default async function Page() {
       lists={lists}
       combinationCount={combinationCount}
       maxCombinations={MAX_COMBINATIONS}
+      initialTemplate={template}
     />
   )
 }

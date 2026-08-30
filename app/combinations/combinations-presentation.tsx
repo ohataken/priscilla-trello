@@ -57,12 +57,14 @@ export function CombinationsPresentation({
   lists,
   combinationCount,
   maxCombinations,
+  initialTemplate,
 }: {
   lists: List[]
   combinationCount: number
   maxCombinations: number
+  initialTemplate: string
 }) {
-  const [template, setTemplate] = useState('')
+  const [template, setTemplate] = useState(initialTemplate)
 
   const usable = lists.filter((list) => list.cards.length > 0)
   const empty = lists.filter((list) => list.cards.length === 0)
