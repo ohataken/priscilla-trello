@@ -33,5 +33,12 @@ export default async function Page({
     }
   }
 
+  const list = (await listResponse.json()) as { name: string }
+  const cards = (await cardsResponse.json()) as {
+    id: string
+    name: string
+    desc: string
+  }[]
+
   return null
 }
