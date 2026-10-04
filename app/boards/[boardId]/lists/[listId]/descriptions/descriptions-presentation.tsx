@@ -1,3 +1,5 @@
+import Link from 'next/link'
+
 export function DescriptionsPresentation({
   boardId,
   listId,
@@ -11,6 +13,14 @@ export function DescriptionsPresentation({
 }) {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-5 py-8">
+      <div className="flex flex-col gap-2">
+        <Link
+          href={`/boards/${boardId}/lists/${listId}`}
+          className="text-sm text-neutral-500 underline underline-offset-4"
+        >
+          リストに戻る
+        </Link>
+      </div>
     </main>
   )
 }
