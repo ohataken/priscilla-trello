@@ -33,6 +33,13 @@ export function DescriptionsPresentation({
               className="flex flex-col gap-2 rounded-lg bg-neutral-100 px-4 py-3 dark:bg-neutral-900"
             >
               <p className="text-sm font-semibold break-words">{card.name}</p>
+              {card.desc.length === 0 ? (
+                <p className="text-xs text-neutral-400">説明がありません。</p>
+              ) : (
+                <p className="text-xs break-words whitespace-pre-wrap text-neutral-500">
+                  {card.desc}
+                </p>
+              )}
             </li>
           ))}
         </ul>
