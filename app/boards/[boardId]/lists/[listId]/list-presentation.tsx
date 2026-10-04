@@ -58,6 +58,12 @@ export function ListPresentation({
           ボードに戻る
         </Link>
         <h1 className="text-xl font-bold break-words">{list.name}</h1>
+        <Link
+          href={`/boards/${boardId}/lists/${listId}/descriptions`}
+          className="text-sm text-neutral-500 underline underline-offset-4"
+        >
+          説明を一覧する
+        </Link>
       </div>
 
       <div className="flex items-center gap-4">
