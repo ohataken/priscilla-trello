@@ -9,5 +9,14 @@ export default async function Page({
     throw new Error('Missing environment variable TRELLO_API_KEY or TRELLO_TOKEN')
   }
 
+  const init = {
+    cache: 'no-store' as const,
+    headers: {
+      Accept: 'application/json',
+      Authorization: `OAuth oauth_consumer_key="${key}", oauth_token="${token}"`,
+    },
+  }
+  const base = `https://api.trello.com/1/lists/${encodeURIComponent(listId)}`
+
   return null
 }
