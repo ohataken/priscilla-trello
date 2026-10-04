@@ -1,3 +1,7 @@
-export function DescriptionsPresentation() {
+export function DescriptionsPresentation({
+  boardId,
+}: {
+  boardId: string
+}) {
   return null
 }
