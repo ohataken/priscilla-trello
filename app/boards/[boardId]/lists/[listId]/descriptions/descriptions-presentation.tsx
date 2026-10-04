@@ -20,6 +20,7 @@ export function DescriptionsPresentation({
         >
           リストに戻る
         </Link>
+        <h1 className="text-xl font-bold break-words">{list.name} の説明一覧</h1>
       </div>
     </main>
   )
