@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation'
 
+import { DescriptionsPresentation } from './descriptions-presentation'
+
 export default async function Page({
   params,
 }: PageProps<'/boards/[boardId]/lists/[listId]/descriptions'>) {
@@ -40,5 +42,7 @@ export default async function Page({
     desc: string
   }[]
 
-  return null
+  return (
+    <DescriptionsPresentation boardId={boardId} listId={listId} list={list} cards={cards} />
+  )
 }
