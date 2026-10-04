@@ -18,5 +18,10 @@ export default async function Page({
   }
   const base = `https://api.trello.com/1/lists/${encodeURIComponent(listId)}`
 
+  const [listResponse, cardsResponse] = await Promise.all([
+    fetch(`${base}?fields=id,name`, init),
+    fetch(`${base}/cards?fields=id,name,desc&filter=open`, init),
+  ])
+
   return null
 }
