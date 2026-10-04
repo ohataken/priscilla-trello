@@ -1,3 +1,5 @@
+import { notFound } from 'next/navigation'
+
 export default async function Page({
   params,
 }: PageProps<'/boards/[boardId]/lists/[listId]/descriptions'>) {
@@ -22,6 +24,14 @@ export default async function Page({
     fetch(`${base}?fields=id,name`, init),
     fetch(`${base}/cards?fields=id,name,desc&filter=open`, init),
   ])
+  for (const response of [listResponse, cardsResponse]) {
+    if (response.status === 400 || response.status === 404) {
+      notFound()
+    }
+    if (!response.ok) {
+      throw new Error(`Trello API ${response.status}: ${await response.text()}`)
+    }
+  }
 
   return null
 }
