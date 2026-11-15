@@ -11,15 +11,18 @@ type TemplateCard = { desc: string; pickerHref: string }
 
 async function fetchTemplateCard(cardId: string, init: RequestInit): Promise<TemplateCard> {
   const response = await fetch(
-    `https://api.trello.com/1/cards/${encodeURIComponent(cardId)}?fields=desc`,
+    `https://api.trello.com/1/cards/${encodeURIComponent(cardId)}?fields=desc,idBoard,idList`,
     init,
   )
   if (!response.ok) {
     return { desc: '', pickerHref: DEFAULT_PICKER_HREF }
   }
 
-  const card = (await response.json()) as { desc: string }
-  return { desc: card.desc, pickerHref: DEFAULT_PICKER_HREF }
+  const card = (await response.json()) as { desc: string; idBoard: string; idList: string }
+  return {
+    desc: card.desc,
+    pickerHref: `/combinations/boards/${encodeURIComponent(card.idBoard)}/lists/${encodeURIComponent(card.idList)}/cards`,
+  }
 }
 
 export default async function Page({ searchParams }: PageProps<'/combinations'>) {
