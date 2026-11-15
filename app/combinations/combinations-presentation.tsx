@@ -58,11 +58,13 @@ export function CombinationsPresentation({
   combinationCount,
   maxCombinations,
   initialTemplate,
+  templatePickerHref,
 }: {
   lists: List[]
   combinationCount: number
   maxCombinations: number
   initialTemplate: string
+  templatePickerHref: string
 }) {
   const [template, setTemplate] = useState(initialTemplate)
 
@@ -158,7 +160,7 @@ export function CombinationsPresentation({
                     テンプレート
                   </label>
                   <Link
-                    href="/combinations/boards"
+                    href={templatePickerHref}
                     className="shrink-0 text-xs text-neutral-500 underline underline-offset-4"
                   >
                     カードから選ぶ

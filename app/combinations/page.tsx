@@ -5,6 +5,8 @@ export const dynamic = 'force-dynamic'
 
 const MAX_COMBINATIONS = 200
 
+const DEFAULT_PICKER_HREF = '/combinations/boards'
+
 async function fetchCardDesc(cardId: string, init: RequestInit): Promise<string> {
   const response = await fetch(
     `https://api.trello.com/1/cards/${encodeURIComponent(cardId)}?fields=desc`,
@@ -27,6 +29,7 @@ export default async function Page({ searchParams }: PageProps<'/combinations'>)
         combinationCount={0}
         maxCombinations={MAX_COMBINATIONS}
         initialTemplate=""
+        templatePickerHref={DEFAULT_PICKER_HREF}
       />
     )
   }
@@ -89,6 +92,7 @@ export default async function Page({ searchParams }: PageProps<'/combinations'>)
       combinationCount={combinationCount}
       maxCombinations={MAX_COMBINATIONS}
       initialTemplate={template}
+      templatePickerHref={DEFAULT_PICKER_HREF}
     />
   )
 }
