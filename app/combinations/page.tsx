@@ -7,17 +7,19 @@ const MAX_COMBINATIONS = 200
 
 const DEFAULT_PICKER_HREF = '/combinations/boards'
 
-async function fetchCardDesc(cardId: string, init: RequestInit): Promise<string> {
+type TemplateCard = { desc: string; pickerHref: string }
+
+async function fetchTemplateCard(cardId: string, init: RequestInit): Promise<TemplateCard> {
   const response = await fetch(
     `https://api.trello.com/1/cards/${encodeURIComponent(cardId)}?fields=desc`,
     init,
   )
   if (!response.ok) {
-    return ''
+    return { desc: '', pickerHref: DEFAULT_PICKER_HREF }
   }
 
   const card = (await response.json()) as { desc: string }
-  return card.desc
+  return { desc: card.desc, pickerHref: DEFAULT_PICKER_HREF }
 }
 
 export default async function Page({ searchParams }: PageProps<'/combinations'>) {
@@ -77,8 +79,10 @@ export default async function Page({ searchParams }: PageProps<'/combinations'>)
   )
   const lists = fetched.filter((list) => list !== null)
 
-  const template =
-    typeof cardId === 'string' ? await fetchCardDesc(cardId, init) : ''
+  const templateCard =
+    typeof cardId === 'string'
+      ? await fetchTemplateCard(cardId, init)
+      : { desc: '', pickerHref: DEFAULT_PICKER_HREF }
 
   const usable = lists.filter((list) => list.cards.length > 0)
   const combinationCount =
@@ -91,8 +95,8 @@ export default async function Page({ searchParams }: PageProps<'/combinations'>)
       lists={lists}
       combinationCount={combinationCount}
       maxCombinations={MAX_COMBINATIONS}
-      initialTemplate={template}
-      templatePickerHref={DEFAULT_PICKER_HREF}
+      initialTemplate={templateCard.desc}
+      templatePickerHref={templateCard.pickerHref}
     />
   )
 }
